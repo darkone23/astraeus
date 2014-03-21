@@ -2,7 +2,7 @@
   "name": "astraeus",
   "version": "0.1.0",
   "description": "ansible inventory viewer",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
     "test": "mocha",
     "start": "node index.js"
@@ -16,5 +16,14 @@
   "bugs": {
     "url": "https://github.com/eggsby/astraeus/issues"
   },
-  "homepage": "https://github.com/eggsby/astraeus"
+  "homepage": "https://github.com/eggsby/astraeus",
+  "dependencies": {
+    "nconf": "0.6.9",
+    "q": "1.0.1",
+    "mode-to-permissions": "0.0.1",
+    "mori": "0.2.5"
+  },
+  "devDependencies": {
+    "mocha": "1.18.2"
+  }
 }
