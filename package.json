@@ -1,0 +1,20 @@
+{
+  "name": "astraeus",
+  "version": "0.1.0",
+  "description": "ansible inventory viewer",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eggsby/astraeus"
+  },
+  "author": "Thomas Omans",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eggsby/astraeus/issues"
+  },
+  "homepage": "https://github.com/eggsby/astraeus"
+}
