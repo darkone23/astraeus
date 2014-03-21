@@ -1,8 +1,8 @@
 "use strict";
 
 var fs = require('fs'),
-    mori = require("mori"),
-    Q = require("q"),
+    _ = require("mori"),
+    q = require("q"),
     modeToPermissions = require('mode-to-permissions');
 
 function isExecuteable(stats) {
@@ -20,23 +20,17 @@ function readInventoryIni(path) {
 function readInventory(path) {
     return function(stats) {
         return isExecuteable(stats) ?
-            readInventoryScript(path) :
-            readInventoryIni(path);
+            readInventoryScript(path) : readInventoryIni(path);
     };
 };
 
 function getInventory(path) {
-    return Q.denodeify(fs.stat)(path)
-        .then(readInventory(path));
+    return q.denodeify(fs.stat)(path).then(readInventory(path));
 };
 
 function getInventories(inventoryPaths) {
-    var q = Q.defer();
-    Q.all(inventoryPaths.map(getInventory))
-        .then(function(inventories) {
-            q.resolve(mori.zipmap(inventoryPaths, inventories));
-        });
-    return q.promise;
+    var intoMap = _.partial(_.zipmap, inventoryPaths);
+    return q.all(inventoryPaths.map(getInventory)).then(intoMap);
 };
 
 module.exports = {
