@@ -3,6 +3,7 @@
 var fs = require('q-io/fs'),
     _ = require("mori"),
     q = require("q"),
+    spawn = require('child_process').spawn,
     modeToPermissions = require('mode-to-permissions');
 
 function isExecuteable(stats) {
@@ -10,7 +11,22 @@ function isExecuteable(stats) {
 };
 
 function readInventoryScript(path) {
-    return "script";
+    var deferred = q.defer(),
+        proc = spawn(path, ["--list"]),
+        stdout = "", stderr="";
+
+    proc.stdout.on("data", function(chunk) { stdout += chunk; });
+    proc.stderr.on("data", function(chunk) { stderr += chunk; });
+
+    proc.on("close", function(code) {
+       if (code === 0) {
+            deferred.resolve(JSON.parse(stdout));
+	} else {
+            deferred.reject(new Error(stderr));
+	};
+    });
+
+    return deferred.promise;
 };
 
 function readInventoryIni(path) {
