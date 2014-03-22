@@ -22,7 +22,8 @@
     "q": "1.0.1",
     "q-io": "1.11.0",
     "mode-to-permissions": "0.0.1",
-    "mori": "0.2.5"
+    "mori": "0.2.5",
+    "ini": "1.1.0"
   },
   "devDependencies": {
     "mocha": "1.18.2",

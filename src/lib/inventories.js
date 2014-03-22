@@ -3,6 +3,7 @@
 var fs = require('q-io/fs'),
     _ = require("mori"),
     q = require("q"),
+    ini = require("ini"),
     spawn = require('child_process').spawn,
     modeToPermissions = require('mode-to-permissions');
 
@@ -29,8 +30,28 @@ function readInventoryScript(path) {
     return deferred.promise;
 };
 
+function parseAnsibleIni(str) {
+    var parsed = ini.parse(str),
+        datastruct = _.js_to_clj(parsed),
+        inventory = _.hash_map();
+
+    _.each(datastruct, function(entry) {
+        var key = _.first(entry),
+            val = _.last(entry),
+            meta = key.split(":"),
+            hostgroup = _.first(meta),
+            category;
+
+        category = (meta.length === 1) ? "hosts" : _.nth(meta, 1);
+        val = (category === "hosts" || category === "children") ? _.keys(val) : val;
+        inventory = _.assoc_in(inventory, [hostgroup, category], val);
+    });
+
+    return _.clj_to_js(inventory);
+};
+
 function readInventoryIni(path) {
-    return "ini";
+    return fs.read(path).then(parseAnsibleIni);
 };
 
 function readInventory(path) {
