@@ -1,20 +1,20 @@
 "use strict";
 
-var fs = require('q-io/fs'),
-    _ = require("mori"),
-    q = require("q"),
-    ini = require("ini"),
+var fs    = require('q-io/fs'),
+    ini   = require("ini"),
+    m     = require("mori"),
+    q     = require("q"),
     spawn = require('child_process').spawn,
-    modeToPermissions = require('mode-to-permissions');
+    perms = require('mode-to-permissions');
 
 function isExecuteable(stats) {
-    return modeToPermissions(stats.node.mode).execute.owner;
+    return perms(stats.node.mode).execute.owner;
 };
 
 function readInventoryScript(path) {
     var deferred = q.defer(),
-        proc = spawn(path, ["--list"]),
-        stdout = "", stderr="";
+        proc     = spawn(path, ["--list"]),
+        stdout   = "", stderr="";
 
     proc.stdout.on("data", function(chunk) { stdout += chunk; });
     proc.stderr.on("data", function(chunk) { stderr += chunk; });
@@ -31,41 +31,44 @@ function readInventoryScript(path) {
 };
 
 function invalidEntry(hostgroup, category) {
-    var invalidGroup = hostgroup.indexOf(" ") !== -1,
+    var invalidGroup    = hostgroup.indexOf(" ") !== -1,
         invalidCategory = (category !== "vars") &&
                           (category !== "children") &&
                           (category !== "hosts");
 
     return invalidGroup || invalidCategory;
-}
+};
 
 function parseAnsibleIni(str) {
-    var parsed = ini.parse(str),
-        datastruct = _.js_to_clj(parsed),
-        inventory = _.hash_map();
+    var parsed     = ini.parse(str),
+        inventory  = m.hash_map(),
+        datastruct = m.js_to_clj(parsed);
 
-    _.each(datastruct, function(entry) {
-        var key = _.first(entry),
-            val = _.last(entry),
-            meta = key.split(":"),
-            hostgroup = _.first(meta),
-            category;
+    m.each(datastruct, function(entry) {
+        var key       = m.first(entry),
+            val       = m.last(entry),
+            meta      = key.split(":"),
+            hostgroup = m.first(meta),
+            category  = m.last(meta);
 
-        category = (meta.length === 1) ? "hosts" : _.nth(meta, 1);
-        val = (category === "hosts" || category === "children") ? _.keys(val) : val;
+        category = (meta.length === 1) ? "hosts" : category;
 
 	if (invalidEntry(hostgroup, category)) {
 	    throw new Error("Unsupported or invalid inventory file");
-        } else {
-            inventory = _.assoc_in(inventory, [hostgroup, category], val);
         }
+
+        val = (category === "hosts" ||
+               category === "children") ? m.keys(val) : val;
+
+        inventory = m.assoc_in(inventory, [hostgroup, category], val);
     });
 
-    return _.clj_to_js(inventory);
+    return m.clj_to_js(inventory);
 };
 
 function readInventoryIni(path) {
-    return fs.read(path).then(parseAnsibleIni);
+    return fs.read(path)
+        .then(parseAnsibleIni);
 };
 
 function readInventory(path) {
@@ -77,12 +80,14 @@ function readInventory(path) {
 };
 
 function getInventory(path) {
-    return fs.stat(path).then(readInventory(path));
+    return fs.stat(path)
+        .then(readInventory(path));
 };
 
 function getInventories(inventoryPaths) {
-    var intoMap = _.partial(_.zipmap, inventoryPaths);
-    return q.all(inventoryPaths.map(getInventory)).then(intoMap);
+    var intoMap = m.partial(m.zipmap, inventoryPaths);
+    return q.all(inventoryPaths.map(getInventory))
+        .then(intoMap);
 };
 
 module.exports = {
