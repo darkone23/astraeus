@@ -1,0 +1,25 @@
+{
+  "name": "astraeus",
+  "version": "0.1.0",
+  "homepage": "https://github.com/eggsby/astraeus",
+  "authors": [
+    "Thomas Omans <thomas.omans@gmail.com>"
+  ],
+  "description": "ansible inventory viewer",
+  "main": "public/js/app.js",
+  "license": "ISC",
+  "private": true,
+  "ignore": [
+    "**/*",
+    "src/",
+    "node_modules",
+    "bower_components",
+    "public/vendor/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "0.10.0",
+    "requirejs": "2.1.11"
+  }
+}
