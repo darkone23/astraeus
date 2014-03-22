@@ -24,11 +24,20 @@ function readInventoryScript(path) {
             deferred.resolve(JSON.parse(stdout));
 	} else {
             deferred.reject(new Error(stderr));
-	};
+	}
     });
 
     return deferred.promise;
 };
+
+function invalidEntry(hostgroup, category) {
+    var invalidGroup = hostgroup.indexOf(" ") !== -1,
+        invalidCategory = (category !== "vars") &&
+                          (category !== "children") &&
+                          (category !== "hosts");
+
+    return invalidGroup || invalidCategory;
+}
 
 function parseAnsibleIni(str) {
     var parsed = ini.parse(str),
@@ -44,7 +53,12 @@ function parseAnsibleIni(str) {
 
         category = (meta.length === 1) ? "hosts" : _.nth(meta, 1);
         val = (category === "hosts" || category === "children") ? _.keys(val) : val;
-        inventory = _.assoc_in(inventory, [hostgroup, category], val);
+
+	if (invalidEntry(hostgroup, category)) {
+	    throw new Error("Unsupported or invalid inventory file");
+        } else {
+            inventory = _.assoc_in(inventory, [hostgroup, category], val);
+        }
     });
 
     return _.clj_to_js(inventory);

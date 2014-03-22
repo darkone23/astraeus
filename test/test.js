@@ -7,7 +7,7 @@ chai.use(promises);
 chai.should();
 
 describe('ansible inventories', function() {
-    describe('loading from disk', function() {
+    describe('loaded from disk', function() {
         it('should run executeable inventory scripts', function() {
             return inventories.load("test/fixtures/hosts.sh")
                 .should.eventually.become(inventory);
@@ -16,9 +16,13 @@ describe('ansible inventories', function() {
             return inventories.load("test/fixtures/bad.sh")
                 .should.be.rejected;
         });
-        it('should parse non-executeable inventories as ini', function() {
+        it('should parse non-executeable inventories', function() {
             return inventories.load("test/fixtures/hosts.ini")
                 .should.eventually.become(inventory);
+        });
+        it('should reject non-parseable inventories', function() {
+            return inventories.load("test/fixtures/bad.ini")
+                .should.be.rejected;
         });
     });
 });
