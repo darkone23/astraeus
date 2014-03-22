@@ -4,7 +4,7 @@ var gulp  = require('gulp'),
     react = require('gulp-react');
 
 gulp.task('jsx', function() {
-    gulp.src('public/jsx/*.jsx')
+    return gulp.src('public/jsx/*.jsx')
         .pipe(react())
         .pipe(gulp.dest('public/js/build/jsx'));
 });

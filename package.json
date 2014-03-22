@@ -4,8 +4,8 @@
   "description": "ansible inventory viewer",
   "main": "src/app.js",
   "scripts": {
-    "test": "gulp jsx; gulp",
-    "start": "node index.js"
+    "test": "gulp",
+    "start": "node src/app.js"
   },
   "repository": {
     "type": "git",
