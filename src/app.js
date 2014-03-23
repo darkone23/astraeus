@@ -10,6 +10,12 @@ nconf.argv()
 
 server = restify.createServer();
 
+server.get("/api/inventories", function(req, res, next) {
+    var invs = nconf.get("inventories"),
+        send = res.send.bind(res);
+    return inventories.loadAll(invs).then(send).done(next);
+});
+
 server.get(/.*/, restify.serveStatic({
   directory: './public',
   default: 'index.html'

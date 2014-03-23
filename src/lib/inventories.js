@@ -87,7 +87,7 @@ function getInventory(path) {
 function getInventories(inventoryPaths) {
     var intoMap = m.partial(m.zipmap, inventoryPaths);
     return q.all(inventoryPaths.map(getInventory))
-        .then(intoMap);
+        .then(intoMap).then(m.clj_to_js);
 };
 
 module.exports = {
