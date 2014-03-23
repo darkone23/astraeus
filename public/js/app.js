@@ -1,6 +1,6 @@
-define(["vendor/react/react.js", "js/build/jsx/app.js"], function(React, App) {
+define(["react", "js/build/jsx/app.js"], function(React, App) {
 
-    var mountNode = document.getElementById("app");
+    var mountNode = document.body;
     React.renderComponent(App({name: "astraeus"}), mountNode);
 
 });

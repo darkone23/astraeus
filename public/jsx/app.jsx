@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-define(["vendor/react/react.js"], function(React) {
+define(["react"], function(React) {
 
     return React.createClass({
         render: function() {

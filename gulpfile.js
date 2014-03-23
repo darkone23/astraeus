@@ -12,6 +12,9 @@ gulp.task('jsx', function() {
 gulp.task('r.js', ['jsx'], function() {
     rjs({ name: 'js/app',
           baseUrl: 'public',
+          paths: {
+              "react": "vendor/react/react"
+          },
           out: 'js/build/rjs/app.js' })
         .pipe(gulp.dest('./public/'));
 });
