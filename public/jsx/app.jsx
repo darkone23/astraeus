@@ -1,10 +1,10 @@
 /** @jsx React.DOM */
 
-define(["react"], function(React) {
+define(["lodash", "react"], function(_, React) {
 
     return React.createClass({
         render: function() {
-            return <div>Hello {this.props.name}</div>;
+            return <div>Hello { _.keys(this.props).join(" ") }</div>;
         }
     });
 
