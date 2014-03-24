@@ -2,9 +2,14 @@
 
 define(["lodash", "react"], function(_, React) {
 
+    function Inventory(inventory) {
+        return <span> { inventory.path } </span>;
+    }
+
     return React.createClass({
         render: function() {
-            return <div>Hello { _.keys(this.props).join(" ") }</div>;
+            var inventories = _.map(this.props.inventories, Inventory, this);
+            return <div> { inventories } </div>;
         }
     });
 

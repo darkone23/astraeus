@@ -9,19 +9,23 @@ chai.should();
 describe('ansible inventories', function() {
     describe('loaded from disk', function() {
         it('should run executeable inventory scripts', function() {
-            return inventories.load("test/fixtures/hosts.sh")
-                .should.eventually.become(inventory);
+            var path = "test/fixtures/hosts.sh",
+                inv = inventories.buildInventory(path, inventory);
+            return inventories.getInventory(path)
+                .should.eventually.become(inv);
         });
         it('should reject executeable inventory that exit non-zero', function() {
-            return inventories.load("test/fixtures/bad.sh")
+            return inventories.getInventory("test/fixtures/bad.sh")
                 .should.be.rejected;
         });
         it('should parse non-executeable inventories', function() {
-            return inventories.load("test/fixtures/hosts.ini")
-                .should.eventually.become(inventory);
+            var path = "test/fixtures/hosts.ini",
+                inv = inventories.buildInventory(path, inventory);
+            return inventories.getInventory(path)
+                .should.eventually.become(inv);
         });
         it('should reject non-parseable inventories', function() {
-            return inventories.load("test/fixtures/bad.ini")
+            return inventories.getInventory("test/fixtures/bad.ini")
                 .should.be.rejected;
         });
     });
