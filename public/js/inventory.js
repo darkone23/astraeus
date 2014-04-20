@@ -1,28 +1,32 @@
 define(["lodash"], function(_) {
-    // helper fns
+
     function concat(a, b) {
+        // concat([1], [2]) => [1,2]
         return a.concat(b);
     }
 
     function conj(a /*, xs... */) {
+        // conj([1], 2, 3) => [1,2,3]
         return concat(a, Array.prototype.slice.call(arguments, 1));
     }
 
     function get(obj, key, _default) {
+        // get({a: 1}, 'b', 2) => 2
         return _.has(obj, key) ? obj[key] : _default;
     }
 
     function getIn(obj, keys, _default) {
+        // getIn({foo: {bar: 'baz'}}, ['foo', 'bar'], 'quux') => 'baz'
         return _.reduce(keys, function(key) {
             return get(obj, key, _default);
         }, obj);
     }
 
     function mapcat(coll, f, _this) {
+        // mapcat([1,2,3], fn(x) { return [x, x]; }) => [1,1,2,2,3,3]
         return _.map(coll, f, _this).reduce(concat, []);
     }
 
-    // inventory fns
     function getHosts(inventory) {
         var hosts =  mapcat(inventory, function(group) {
             return get(group, 'hosts', []);
@@ -31,7 +35,6 @@ define(["lodash"], function(_) {
     }
 
     function getGroups(inventory, host) {
-        // recursively searches for groups a host is in
         return findAncestors(partition(inventory));
 
         function partition(inventory) {
@@ -84,6 +87,7 @@ define(["lodash"], function(_) {
     }
 
     function getVars(inventory, host, groups) {
+        // get vars in isolated scopes
         var allvars = getIn(inventory, ['all', 'vars'], {}),
             hostvars = getIn(inventory, ['_meta', 'hostvars', host], {}),
             groups = groups || getGroups(inventory, host),
@@ -130,6 +134,7 @@ define(["lodash"], function(_) {
         }
     }
 
+    // module exports
     return {
         getHosts: getHosts,
         getGroups: getGroups,
