@@ -4,8 +4,18 @@ define(["lodash"], function(_) {
         return a.concat(b);
     }
 
+    function conj(a /*, xs... */) {
+        return concat(a, Array.prototype.slice.call(arguments, 1));
+    }
+
     function get(obj, key, _default) {
         return _.has(obj, key) ? obj[key] : _default;
+    }
+
+    function getIn(obj, keys, _default) {
+        return _.reduce(keys, function(key) {
+            return get(obj, key, _default);
+        }, obj);
     }
 
     function mapcat(coll, f, _this) {
@@ -71,11 +81,59 @@ define(["lodash"], function(_) {
             return namedGroup;
         }
 
-      }
+    }
+
+    function getVars(inventory, host, groups) {
+        var allvars = getIn(inventory, ['all', 'vars'], {}),
+            hostvars = getIn(inventory, ['_meta', 'hostvars', host], {}),
+            groups = groups || getGroups(inventory, host),
+            groupvars = _.reduce(groups, function(vars, group, name) {
+                return _.assign(vars, get(group, 'vars', {}));
+            }, {});
+
+        return {
+            mergedvars: _.assign({}, allvars, groupvars, hostvars),
+            groupvars: groupvars,
+            allvars: allvars,
+            hostvars: hostvars,
+            collisions: findCollisions(groups)
+        }
+
+        function findCollisions(groups) {
+            var table = {},
+                collisions = {};
+
+            // build frequency table
+            _.each(groups, function(group, name) {
+                var vars = get(group, 'vars', {}),
+                    keys = _.keys(vars);
+                _.each(keys, function(key) {
+                    table[key] = conj(get(table, key, []), name);
+                });
+            });
+
+            // push vars with frequency greater than 1
+            _.each(table, function(groups, varname) {
+                var vals;
+                if (groups.length > 1) {
+                    vals = _.map(groups, function(group) {
+                        return getIn(groups, [group, 'vars', varname]);
+                    });
+                    collisions[varname] = {
+                        groups: groups,
+                        vals: vals
+                    };
+                }
+            });
+
+            return collisions;
+        }
+    }
 
     return {
         getHosts: getHosts,
-        getGroups: getGroups
+        getGroups: getGroups,
+        getVars: getVars
     };
 
 })
