@@ -16,6 +16,8 @@ gulp.task('r.js', ['jsx'], function() {
               "react": "vendor/react/react",
               "lodash": "vendor/lodash/dist/lodash",
               "superagent": "vendor/superagent/superagent",
+              "crossroads": "vendor/crossroads/dist/crossroads", 
+              "signals": "vendor/crossroads/dev/lib/signals",
               "inventory": "js/inventory"
           },
           out: 'js/build/rjs/app.js' })
